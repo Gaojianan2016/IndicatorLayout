@@ -94,6 +94,16 @@ public abstract class Indicator {
         updataView(indicatorSize);
     }
 
+    public void changeType(int type){
+        setType(type);
+        updataView();
+    }
+
+    public void changeType(int type, List<String> titles){
+        setType(type);
+        updataView(titles);
+    }
+
     public void updataView(int indicatorSize) {
         updataView(indicatorSize, titles);
     }
