@@ -90,8 +90,8 @@ public abstract class Indicator {
         this.titles = titles;
     }
 
-    public void updataView() {
-        updataView(indicatorSize);
+    public void setGravity(int gravity){
+        this.gravity = gravity;
     }
 
     public void changeType(int type){
@@ -102,6 +102,10 @@ public abstract class Indicator {
     public void changeType(int type, List<String> titles){
         setType(type);
         updataView(titles);
+    }
+
+    public void updataView() {
+        updataView(indicatorSize);
     }
 
     public void updataView(int indicatorSize) {
