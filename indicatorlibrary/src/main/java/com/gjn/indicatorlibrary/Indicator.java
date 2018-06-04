@@ -28,7 +28,7 @@ public abstract class Indicator {
     private int gravity = Gravity.CENTER;
     private int pointWH;
     private int margin;
-    private boolean isMandatory = true;
+    private boolean isMandatory;
     private List<View> pointViews = new ArrayList<>();
     private int indicatorSize;
     private List<String> titles;
