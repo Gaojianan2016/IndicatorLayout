@@ -87,16 +87,16 @@ public abstract class Indicator {
         this.titles = titles;
     }
 
-    public void setGravity(int gravity){
+    public void setGravity(int gravity) {
         this.gravity = gravity;
     }
 
-    public void changeType(int type){
+    public void changeType(int type) {
         setType(type);
         updataView();
     }
 
-    public void changeType(int type, List<String> titles){
+    public void changeType(int type, List<String> titles) {
         setType(type);
         updataView(titles);
     }
@@ -123,7 +123,7 @@ public abstract class Indicator {
         if (type == TYPE_TEXT) {
             if (titles != null) {
                 indicatorSize = titles.size();
-            }else {
+            } else {
                 throw new NullPointerException("titles is null");
             }
         }
@@ -176,13 +176,12 @@ public abstract class Indicator {
                     pointViews.get(i).setSelected(false);
                 }
             }
+        } else if (type == TYPE_TEXT) {
+            TextView textView = (TextView) pointViews.get(0);
+            textView.setText(titles.get(position));
         } else {
             TextView textView = (TextView) pointViews.get(0);
-            if (titles != null && titles.size() > 0) {
-                textView.setText(titles.get(position));
-            } else {
-                textView.setText((position + 1) + "/" + indicatorSize);
-            }
+            textView.setText((position + 1) + "/" + indicatorSize);
         }
     }
 
