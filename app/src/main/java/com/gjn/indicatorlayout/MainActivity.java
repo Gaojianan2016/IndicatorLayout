@@ -77,17 +77,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("-s-", " type = " + type);
                 switch (type) {
                     case 0:
-                        indicator.setType(Indicator.TYPE_POINT);
+                        indicator.changeType(Indicator.TYPE_POINT);
                         break;
                     case 1:
-                        indicator.setType(Indicator.TYPE_NUM);
+                        indicator.changeType(Indicator.TYPE_NUM);
                         break;
                     case 2:
-                        indicator.setType(Indicator.TYPE_TEXT);
-                        indicator.setTitles(list);
+                        indicator.changeType(Indicator.TYPE_TEXT, list);
                         break;
                 }
-                indicator.updataView();
                 indicator.selectIndicator(size);
             }
         });
