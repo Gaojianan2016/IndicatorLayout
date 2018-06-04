@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            protected View getPointView(View view) {
+            protected View getPointView(View view, int position) {
                 if (type == 0){
                     view.setBackgroundResource(R.drawable.select);
                 }

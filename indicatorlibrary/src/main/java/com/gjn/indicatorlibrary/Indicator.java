@@ -123,9 +123,12 @@ public abstract class Indicator {
     }
 
     public void create() {
-        if (titles != null && titles.size() > 0) {
-            indicatorSize = titles.size();
-            type = TYPE_TEXT;
+        if (type == TYPE_TEXT) {
+            if (titles != null) {
+                indicatorSize = titles.size();
+            }else {
+                throw new NullPointerException("titles is null");
+            }
         }
         if (indicatorSize <= 0) {
             throw new NullPointerException("size is null");
@@ -133,7 +136,6 @@ public abstract class Indicator {
         if (linearLayout == null) {
             throw new NullPointerException("linearLayout is null");
         }
-
         linearLayout.removeAllViews();
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         pointViews.clear();
@@ -149,7 +151,7 @@ public abstract class Indicator {
         linearLayout.setGravity(gravity);
         for (int i = 0; i < indicatorSize; i++) {
             View view = createView(context, linearLayout);
-            ImageView point = (ImageView) getPointView(view);
+            ImageView point = (ImageView) getPointView(view, i);
             if (isMandatory) {
                 view.setLayoutParams(getLayoutParams(pointWH, pointWH, margin));
             } else {
@@ -164,7 +166,7 @@ public abstract class Indicator {
         linearLayout.setGravity(gravity);
         View view = createView(context, linearLayout);
         linearLayout.addView(view);
-        TextView point = (TextView) getPointView(view);
+        TextView point = (TextView) getPointView(view, 0);
         pointViews.add(point);
     }
 
@@ -209,5 +211,5 @@ public abstract class Indicator {
 
     protected abstract View createView(Context context, ViewGroup viewGroup);
 
-    protected abstract View getPointView(View view);
+    protected abstract View getPointView(View view, int position);
 }
