@@ -57,9 +57,6 @@ public abstract class Indicator {
 
     public void setType(int type) {
         this.type = type;
-        if (type != TYPE_TEXT) {
-            titles = null;
-        }
     }
 
     public boolean isMandatory() {
