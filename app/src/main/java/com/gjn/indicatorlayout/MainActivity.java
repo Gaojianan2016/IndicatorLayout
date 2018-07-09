@@ -1,8 +1,8 @@
 package com.gjn.indicatorlayout;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 View view = null;
                 switch (type) {
                     case 0:
+                    case 3:
                         Log.e("-s-", "type = point");
                         view = new ImageView(context);
                         break;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected View getPointView(View view, int position) {
-                if (type == 0){
+                if (type == 0) {
                     view.setBackgroundResource(R.drawable.select);
                 }
                 return view;
@@ -64,19 +65,19 @@ public class MainActivity extends AppCompatActivity {
         list.add("text3");
         list.add("text4");
 
-        indicator.setMandatory(false);
         indicator.create();
 
         findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 type++;
-                if (type > 2){
+                if (type > 3) {
                     type = 0;
                 }
                 Log.e("-s-", " type = " + type);
                 switch (type) {
                     case 0:
+                        indicator.setImgState(0, 0);
                         indicator.changeType(Indicator.TYPE_POINT);
                         break;
                     case 1:
@@ -84,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 2:
                         indicator.changeType(Indicator.TYPE_TEXT, list);
+                        break;
+                    case 3:
+                        indicator.setImgState(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01);
+                        indicator.changeType(Indicator.TYPE_POINT);
                         break;
                 }
                 indicator.selectIndicator(size);
@@ -94,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 size++;
-                if (size >= indicator.getIndicatorSize()){
+                if (size >= indicator.getIndicatorSize()) {
                     size = 0;
                 }
                 Log.e("-s-", "size = " + size);

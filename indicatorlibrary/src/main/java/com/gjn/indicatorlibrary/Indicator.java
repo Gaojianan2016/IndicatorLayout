@@ -2,6 +2,7 @@ package com.gjn.indicatorlibrary;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,11 @@ import java.util.List;
  */
 
 public abstract class Indicator {
-    public static final int TYPE_POINT = 0;
-    public static final int TYPE_NUM = 1;
-    public static final int TYPE_TEXT = 2;
+    private static final String TAG = "Indicator";
+
+    public static final int TYPE_POINT =    0;
+    public static final int TYPE_NUM =      1;
+    public static final int TYPE_TEXT =     2;
 
     private Context context;
     private LinearLayout linearLayout;
@@ -34,6 +37,10 @@ public abstract class Indicator {
     private List<String> titles;
 
     private int type = TYPE_POINT;
+
+    private Object NormalImg;
+    private Object SelectImg;
+    private ImageLoader imageLoader;
 
     public Indicator(Context context, List<String> titles, LinearLayout linearLayout) {
         this.context = context;
@@ -101,6 +108,31 @@ public abstract class Indicator {
         updataView(titles);
     }
 
+    public void setImgState(Object normalImg, Object selectImg, ImageLoader imageLoader) {
+        this.imageLoader = imageLoader;
+        NormalImg = normalImg;
+        SelectImg = selectImg;
+    }
+
+    public void setImgState(int normalImg, int selectImg) {
+        this.imageLoader = new ImageLoader() {
+            @Override
+            public void loadImg(Context context, Object img, ImageView imageView) {
+                imageView.setImageResource((Integer) img);
+            }
+        };
+        if (normalImg != 0) {
+            NormalImg = normalImg;
+        } else {
+            NormalImg = null;
+        }
+        if (selectImg != 0) {
+            SelectImg = selectImg;
+        } else {
+            SelectImg = null;
+        }
+    }
+
     public void updataView() {
         updataView(indicatorSize);
     }
@@ -124,14 +156,21 @@ public abstract class Indicator {
             if (titles != null) {
                 indicatorSize = titles.size();
             } else {
-                throw new NullPointerException("titles is null");
+                Log.e(TAG, "titles is null.");
+                return;
             }
         }
         if (indicatorSize <= 0) {
-            throw new NullPointerException("size is null");
+            Log.e(TAG, "size is null.");
+            return;
         }
         if (linearLayout == null) {
-            throw new NullPointerException("linearLayout is null");
+            Log.e(TAG, "linearLayout is null.");
+            return;
+        }
+        if (NormalImg == null || SelectImg == null) {
+            Log.d(TAG, "NormalImg or SelectImg is null.");
+            imageLoader = null;
         }
         linearLayout.removeAllViews();
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -170,10 +209,18 @@ public abstract class Indicator {
     public void selectIndicator(int position) {
         if (type == TYPE_POINT) {
             for (int i = 0; i < indicatorSize; i++) {
-                if (i == position) {
-                    pointViews.get(i).setSelected(true);
+                if (imageLoader != null) {
+                    if (i == position) {
+                        imageLoader.loadImg(context, SelectImg, (ImageView) pointViews.get(i));
+                    } else {
+                        imageLoader.loadImg(context, NormalImg, (ImageView) pointViews.get(i));
+                    }
                 } else {
-                    pointViews.get(i).setSelected(false);
+                    if (i == position) {
+                        pointViews.get(i).setSelected(true);
+                    } else {
+                        pointViews.get(i).setSelected(false);
+                    }
                 }
             }
         } else if (type == TYPE_TEXT) {
@@ -208,4 +255,8 @@ public abstract class Indicator {
     protected abstract View createView(Context context, ViewGroup viewGroup);
 
     protected abstract View getPointView(View view, int position);
+
+    public interface ImageLoader {
+        void loadImg(Context context, Object img, ImageView imageView);
+    }
 }
