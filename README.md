@@ -19,7 +19,7 @@ dependencies {
 
 # 基本使用
 <br >
-![基本使用](https://github.com/Gaojianan2016/ImgData/blob/master/Indicator_Demo/indicatorlayout%E6%95%88%E6%9E%9C.gif)
+![基本使用](https://github.com/Gaojianan2016/ImgData/blob/master/Indicator_Demo/indicatorlayout_1.gif)
 <br >
 
 ```
