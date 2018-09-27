@@ -1,14 +1,11 @@
 package com.gjn.indicatorlibrary;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +16,20 @@ import java.util.List;
  * Time: 2018/2/10.
  */
 
-public abstract class Indicator {
+public abstract class Indicator implements IndicatorViewListener {
+
     private static final String TAG = "Indicator";
+
+    private static final int H = 60;
 
     public static final int TYPE_POINT =    0;
     public static final int TYPE_NUM =      1;
     public static final int TYPE_TEXT =     2;
+    public static final int TYPE_CUSTOM =   3;
 
     private Context context;
     private LinearLayout linearLayout;
+    private float density;
     private int gravity = Gravity.CENTER;
     private int pointWH;
     private int margin;
@@ -57,101 +59,13 @@ public abstract class Indicator {
     }
 
     private void init() {
-        DisplayMetrics mMetrics = context.getResources().getDisplayMetrics();
-        pointWH = mMetrics.widthPixels / 60;
+        density = context.getResources().getDisplayMetrics().density;
+        pointWH = context.getResources().getDisplayMetrics().widthPixels / H;
         margin = pointWH / 2;
     }
 
-    public void setType(int type) {
-        this.type = type;
-    }
 
-    public boolean isMandatory() {
-        return isMandatory;
-    }
-
-    public void setMandatory(boolean mandatory) {
-        isMandatory = mandatory;
-    }
-
-    public LinearLayout getLinearLayout() {
-        return linearLayout;
-    }
-
-    public int getIndicatorSize() {
-        return indicatorSize;
-    }
-
-    public void setIndicatorSize(int indicatorSize) {
-        this.indicatorSize = indicatorSize;
-    }
-
-    public List<String> getTitles() {
-        return titles;
-    }
-
-    public void setTitles(List<String> titles) {
-        this.titles = titles;
-    }
-
-    public void setGravity(int gravity) {
-        this.gravity = gravity;
-    }
-
-    public void changeType(int type) {
-        setType(type);
-        updataView();
-    }
-
-    public void changeType(int type, List<String> titles) {
-        setType(type);
-        updataView(titles);
-    }
-
-    public void setImgState(Object normalImg, Object selectImg, ImageLoader imageLoader) {
-        this.imageLoader = imageLoader;
-        NormalImg = normalImg;
-        SelectImg = selectImg;
-    }
-
-    public void setImgState(int normalImg, int selectImg) {
-        this.imageLoader = new ImageLoader() {
-            @Override
-            public void loadImg(Context context, Object img, ImageView imageView) {
-                imageView.setImageResource((Integer) img);
-            }
-        };
-        if (normalImg != 0) {
-            NormalImg = normalImg;
-        } else {
-            NormalImg = null;
-        }
-        if (selectImg != 0) {
-            SelectImg = selectImg;
-        } else {
-            SelectImg = null;
-        }
-    }
-
-    public void updataView() {
-        updataView(indicatorSize);
-    }
-
-    public void updataView(int indicatorSize) {
-        updataView(indicatorSize, titles);
-    }
-
-    public void updataView(List<String> titles) {
-        updataView(indicatorSize, titles);
-    }
-
-    public void updataView(int size, List<String> titles) {
-        setIndicatorSize(size);
-        setTitles(titles);
-        create();
-    }
-
-    public void create() {
+    private void create() {
         if (type == TYPE_TEXT) {
             if (titles != null) {
                 indicatorSize = titles.size();
@@ -175,6 +89,7 @@ public abstract class Indicator {
         linearLayout.removeAllViews();
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         pointViews.clear();
+        linearLayout.setGravity(gravity);
         if (type == TYPE_POINT) {
             createPointIndicator();
         } else {
@@ -184,29 +99,173 @@ public abstract class Indicator {
     }
 
     private void createPointIndicator() {
-        linearLayout.setGravity(gravity);
         for (int i = 0; i < indicatorSize; i++) {
             View view = createView(context, linearLayout);
-            ImageView point = (ImageView) getPointView(view, i);
+            if (view == null) {
+                view = new ImageView(context);
+            }
             if (isMandatory) {
                 view.setLayoutParams(getLayoutParams(pointWH, pointWH, margin));
             } else {
                 view.setLayoutParams(getLayoutParams(margin));
             }
             linearLayout.addView(view);
-            pointViews.add(point);
+            pointViews.add(getPointView(view));
         }
     }
 
     private void createTextNumIndicator() {
-        linearLayout.setGravity(gravity);
         View view = createView(context, linearLayout);
+        if (view == null) {
+            view = new MarqueeTextView(context);
+        }
         linearLayout.addView(view);
-        TextView point = (TextView) getPointView(view, 0);
-        pointViews.add(point);
+        pointViews.add(getPointView(view));
+    }
+
+    public boolean isMandatory() {
+        return isMandatory;
+    }
+
+    public Indicator setMandatory(boolean mandatory) {
+        isMandatory = mandatory;
+        return this;
+    }
+
+    public int getIndicatorSize() {
+        return indicatorSize;
+    }
+
+    public Indicator setIndicatorSize(int indicatorSize) {
+        this.indicatorSize = indicatorSize;
+        return this;
+    }
+
+    public List<String> getTitles() {
+        return titles;
+    }
+
+    public Indicator setTitles(List<String> titles) {
+        this.titles = titles;
+        return this;
+    }
+
+    public Indicator setType(int type) {
+        this.type = type;
+        return this;
+    }
+
+    public Indicator setGravity(int gravity) {
+        this.gravity = gravity;
+        return this;
+    }
+
+    public Indicator setMargin(int marginDp) {
+        this.margin = (int) (marginDp * density);
+        return this;
+    }
+
+    public Indicator setImgState(int normalImg, int selectImg) {
+        return setImgState(normalImg, selectImg, new ImageLoader() {
+            @Override
+            public void loadImg(Context context, Object img, ImageView imageView) {
+                imageView.setImageResource((Integer) img);
+            }
+        });
+    }
+
+    public Indicator setImgState(Object normalImg, Object selectImg, ImageLoader imageLoader) {
+        this.imageLoader = imageLoader;
+        if (normalImg instanceof Integer) {
+            if ((int) normalImg != 0) {
+                NormalImg = normalImg;
+            } else {
+                NormalImg = null;
+            }
+        } else {
+            NormalImg = normalImg;
+        }
+        if (selectImg instanceof Integer) {
+            if ((int) selectImg != 0) {
+                SelectImg = selectImg;
+            } else {
+                SelectImg = null;
+            }
+        } else {
+            SelectImg = selectImg;
+        }
+        return this;
+    }
+
+    public void changeBottomPadding(int bottomDp) {
+        int bottom = (int) (density * bottomDp);
+        linearLayout.setPadding(0, 0, 0, bottom);
+    }
+
+    public void changeType(int type) {
+        changeType(type, titles);
+    }
+
+    public void changeType(int type, List<String> titles) {
+        setType(type);
+        updataView(titles);
+    }
+
+    public void changeGravity(int gravity) {
+        setGravity(gravity);
+        updataView();
+    }
+
+    public void changeImageMargin(int marginDp) {
+        changeImageMargin(marginDp, marginDp, marginDp, marginDp);
+    }
+
+    public void changeImageMargin(int leftDp, int topDp, int rightDp, int bottomDp) {
+        int left = (int) (density * leftDp);
+        int top = (int) (density * topDp);
+        int right = (int) (density * rightDp);
+        int bottom = (int) (density * bottomDp);
+        if (type == TYPE_POINT) {
+            for (View pointView : pointViews) {
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) pointView.getLayoutParams();
+                params.leftMargin = left;
+                params.topMargin = top;
+                params.rightMargin = right;
+                params.bottomMargin = bottom;
+                pointView.setLayoutParams(params);
+            }
+        }
+    }
+
+    public void reversalMandatory() {
+        setMandatory(!isMandatory);
+        if (type == TYPE_POINT) {
+            updataView();
+        }
+    }
+
+    public void updataView() {
+        updataView(indicatorSize);
+    }
+
+    public void updataView(int indicatorSize) {
+        updataView(indicatorSize, titles);
+    }
+
+    public void updataView(List<String> titles) {
+        updataView(indicatorSize, titles);
+    }
+
+    public void updataView(int size, List<String> titles) {
+        setIndicatorSize(size);
+        setTitles(titles);
+        create();
     }
 
     public void selectIndicator(int position) {
+        if (position >= indicatorSize) {
+            position = 0;
+        }
         if (type == TYPE_POINT) {
             for (int i = 0; i < indicatorSize; i++) {
                 if (imageLoader != null) {
@@ -224,11 +283,17 @@ public abstract class Indicator {
                 }
             }
         } else if (type == TYPE_TEXT) {
-            TextView textView = (TextView) pointViews.get(0);
+            MarqueeTextView textView = (MarqueeTextView) pointViews.get(0);
             textView.setText(titles.get(position));
-        } else {
-            TextView textView = (TextView) pointViews.get(0);
+        } else if (type == TYPE_NUM) {
+            MarqueeTextView textView = (MarqueeTextView) pointViews.get(0);
             textView.setText((position + 1) + "/" + indicatorSize);
+        } else {
+            String title = "";
+            if (titles != null && titles.size() > 0) {
+                title = titles.get(position);
+            }
+            setCustomView(pointViews.get(0), title, position);
         }
     }
 
@@ -252,9 +317,14 @@ public abstract class Indicator {
         return getLayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, margin);
     }
 
-    protected abstract View createView(Context context, ViewGroup viewGroup);
+    @Override
+    public View getPointView(View view) {
+        return view;
+    }
 
-    protected abstract View getPointView(View view, int position);
+    @Override
+    public void setCustomView(View view, String title, int position) {
+    }
 
     public interface ImageLoader {
         void loadImg(Context context, Object img, ImageView imageView);

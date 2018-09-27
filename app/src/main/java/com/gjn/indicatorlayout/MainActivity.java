@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int type = 0;
     private int size = 0;
+    private EditText etBottom, etMargin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,52 +29,50 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         LinearLayout ll = findViewById(R.id.ll);
+        etBottom = findViewById(R.id.et_bottom);
+        etMargin = findViewById(R.id.et_margin);
 
-        final Indicator indicator = new Indicator(this, 5, ll) {
+        final Indicator indicator = new Indicator(this, 3, ll) {
             @Override
-            protected View createView(Context context, ViewGroup viewGroup) {
-                View view = null;
+            public View createView(Context context, ViewGroup viewGroup) {
                 switch (type) {
-                    case 0:
-                    case 3:
-                        Log.e("-s-", "type = point");
-                        view = new ImageView(context);
-                        break;
-                    case 1:
-                        Log.e("-s-", "type = num");
-                        view = new TextView(context);
-                        break;
-                    case 2:
-                        Log.e("-s-", "type = text");
-                        view = new TextView(context);
-                        break;
+                    case 4:
+                        return LayoutInflater.from(context).inflate(R.layout.item, viewGroup, false);
                 }
-                return view;
+                return null;
             }
 
             @Override
-            protected View getPointView(View view, int position) {
+            public View getPointView(View view) {
                 if (type == 0) {
                     view.setBackgroundResource(R.drawable.select);
                 }
-                return view;
+                return super.getPointView(view);
+            }
+
+            @Override
+            public void setCustomView(View view, String title, int position) {
+                TextView tv_size = view.findViewById(R.id.tv_size);
+                TextView tv_title = view.findViewById(R.id.tv_title);
+                tv_size.setText((position + 1) + "/" + getIndicatorSize());
+                tv_title.setText(title);
             }
         };
 
         final List<String> list = new ArrayList<>();
-        list.add("text0");
-        list.add("text1");
-        list.add("text2");
-        list.add("text3");
-        list.add("text4");
+        list.add("Android 本地化翻译插件，解放你的双手！ AndroidLocalizePlugin");
+        list.add("Android 技能图谱学习路线");
+        list.add("MMKV for Android 多进程设计与实现");
+        list.add("实现类似微博内容，@用户，链接高亮 ExpandableTextView");
 
-        indicator.create();
+        indicator.updataView();
+        indicator.changeGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
 
         findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 type++;
-                if (type > 3) {
+                if (type > 4) {
                     type = 0;
                 }
                 Log.e("-s-", " type = " + type);
@@ -90,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
                         indicator.setImgState(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01);
                         indicator.changeType(Indicator.TYPE_POINT);
                         break;
+                    case 4:
+                        indicator.changeType(Indicator.TYPE_CUSTOM);
+                        break;
                 }
                 indicator.selectIndicator(size);
             }
@@ -102,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 if (size >= indicator.getIndicatorSize()) {
                     size = 0;
                 }
-                Log.e("-s-", "size = " + size);
                 indicator.selectIndicator(size);
             }
         });
@@ -110,9 +113,23 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                indicator.setMandatory(!indicator.isMandatory());
-                indicator.updataView();
+                indicator.reversalMandatory();
                 indicator.selectIndicator(size);
+            }
+        });
+
+        findViewById(R.id.btn4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                indicator.changeBottomPadding(Integer.parseInt(etBottom.getText().toString()));
+            }
+        });
+
+        findViewById(R.id.btn5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int margin = Integer.parseInt(etMargin.getText().toString());
+                indicator.changeImageMargin(margin);
             }
         });
     }
