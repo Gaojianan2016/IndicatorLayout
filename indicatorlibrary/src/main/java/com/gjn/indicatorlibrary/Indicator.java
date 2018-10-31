@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * Time: 2018/2/10.
  */
 
-public abstract class Indicator implements IndicatorViewListener {
+public class Indicator implements IndicatorViewListener {
 
     private static final String TAG = "Indicator";
 
@@ -198,7 +199,7 @@ public abstract class Indicator implements IndicatorViewListener {
     }
 
     public void changeBottomPadding(int bottomDp) {
-        int bottom = (int) (density * bottomDp);
+        int bottom = (int) (density * bottomDp + 0.5f);
         linearLayout.setPadding(0, 0, 0, bottom);
     }
 
@@ -221,10 +222,10 @@ public abstract class Indicator implements IndicatorViewListener {
     }
 
     public void changeImageMargin(int leftDp, int topDp, int rightDp, int bottomDp) {
-        int left = (int) (density * leftDp);
-        int top = (int) (density * topDp);
-        int right = (int) (density * rightDp);
-        int bottom = (int) (density * bottomDp);
+        int left = (int) (density * leftDp + 0.5f);
+        int top = (int) (density * topDp + 0.5f);
+        int right = (int) (density * rightDp + 0.5f);
+        int bottom = (int) (density * bottomDp + 0.5f);
         if (type == TYPE_POINT) {
             for (View pointView : pointViews) {
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) pointView.getLayoutParams();
@@ -315,6 +316,11 @@ public abstract class Indicator implements IndicatorViewListener {
 
     private LinearLayout.LayoutParams getLayoutParams(int margin) {
         return getLayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, margin);
+    }
+
+    @Override
+    public View createView(Context context, ViewGroup viewGroup) {
+        return null;
     }
 
     @Override

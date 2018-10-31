@@ -13,14 +13,18 @@ allprojects {
 
 
 dependencies {
-    implementation 'com.github.Gaojianan2016:IndicatorLayout:1.0.9'
+    implementation 'com.github.Gaojianan2016:IndicatorLayout:1.1.0'
 }
 ```
 
 # 基本使用
 <br >
-![基本使用](https://github.com/Gaojianan2016/ImgData/blob/master/Indicator_Demo/indicatorlayout_1.gif)
+![基本使用1](https://github.com/Gaojianan2016/ImgData/blob/master/Indicator_Demo/indicatorlayout_1.gif)
 <br >
+![基本使用2](https://github.com/Gaojianan2016/ImgData/blob/master/Indicator_Demo/indicatorlayout_2.gif)
+<br >
+
+
 
 ```
 package com.gjn.indicatorlayout;
@@ -28,7 +32,6 @@ package com.gjn.indicatorlayout;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +47,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    LinearLayout ll_1, ll_2, ll_3, ll_4, ll_5, ll_6, ll_7, ll_8;
+    Indicator indicator1, indicator2, indicator3, indicator4, indicator5, indicator6, indicator7, indicator8;
+    List<Indicator> indicators;
+    List<String> list;
     private int type = 0;
     private int size = 0;
     private EditText etBottom, etMargin;
@@ -53,26 +60,38 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LinearLayout ll = findViewById(R.id.ll);
-        etBottom = findViewById(R.id.et_bottom);
-        etMargin = findViewById(R.id.et_margin);
+        etBottom = findViewById(R.id.et_1);
+        etMargin = findViewById(R.id.et_2);
 
-        final Indicator indicator = new Indicator(this, 3, ll) {
+        ll_1 = findViewById(R.id.ll_1);
+        ll_2 = findViewById(R.id.ll_2);
+        ll_3 = findViewById(R.id.ll_3);
+        ll_4 = findViewById(R.id.ll_4);
+        ll_5 = findViewById(R.id.ll_5);
+        ll_6 = findViewById(R.id.ll_6);
+        ll_7 = findViewById(R.id.ll_7);
+        ll_8 = findViewById(R.id.ll_8);
+
+        list = new ArrayList<>();
+        list.add("Android 本地化翻译插件，解放你的双手！ AndroidLocalizePlugin");
+        list.add("Android 技能图谱学习路线");
+        list.add("MMKV for Android 多进程设计与实现");
+        list.add("实现类似微博内容，@用户，链接高亮 ExpandableTextView");
+
+        indicator1 = new Indicator(this, 4, ll_1);
+        indicator1.changeType(Indicator.TYPE_NUM);
+
+        indicator2 = new Indicator(this, 4, ll_2);
+        indicator2.changeType(Indicator.TYPE_TEXT, list);
+
+        indicator3 = new Indicator(this, 4, ll_3);
+        indicator3.setImgState(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01);
+        indicator3.updataView();
+
+        indicator4 = new Indicator(this, 4, ll_4) {
             @Override
             public View createView(Context context, ViewGroup viewGroup) {
-                switch (type) {
-                    case 4:
-                        return LayoutInflater.from(context).inflate(R.layout.item, viewGroup, false);
-                }
-                return null;
-            }
-
-            @Override
-            public View getPointView(View view) {
-                if (type == 0) {
-                    view.setBackgroundResource(R.drawable.select);
-                }
-                return super.getPointView(view);
+                return LayoutInflater.from(context).inflate(R.layout.item, viewGroup, false);
             }
 
             @Override
@@ -83,78 +102,73 @@ public class MainActivity extends AppCompatActivity {
                 tv_title.setText(title);
             }
         };
+        indicator4.changeType(Indicator.TYPE_CUSTOM, list);
 
-        final List<String> list = new ArrayList<>();
-        list.add("Android 本地化翻译插件，解放你的双手！ AndroidLocalizePlugin");
-        list.add("Android 技能图谱学习路线");
-        list.add("MMKV for Android 多进程设计与实现");
-        list.add("实现类似微博内容，@用户，链接高亮 ExpandableTextView");
-
-        indicator.updataView();
-        indicator.changeGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-
-        findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
+        indicator5 = new Indicator(this, 4, ll_5) {
             @Override
-            public void onClick(View v) {
-                type++;
-                if (type > 4) {
-                    type = 0;
-                }
-                Log.e("-s-", " type = " + type);
-                switch (type) {
-                    case 0:
-                        indicator.setImgState(0, 0);
-                        indicator.changeType(Indicator.TYPE_POINT);
-                        break;
-                    case 1:
-                        indicator.changeType(Indicator.TYPE_NUM);
-                        break;
-                    case 2:
-                        indicator.changeType(Indicator.TYPE_TEXT, list);
-                        break;
-                    case 3:
-                        indicator.setImgState(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01);
-                        indicator.changeType(Indicator.TYPE_POINT);
-                        break;
-                    case 4:
-                        indicator.changeType(Indicator.TYPE_CUSTOM);
-                        break;
-                }
-                indicator.selectIndicator(size);
+            public View getPointView(View view) {
+                view.setBackgroundResource(R.drawable.select);
+                return super.getPointView(view);
             }
-        });
+        };
+        indicator5.updataView();
 
-        findViewById(R.id.btn2).setOnClickListener(new View.OnClickListener() {
+        indicator6 = new Indicator(this, 4, ll_6) {
+            @Override
+            public View getPointView(View view) {
+                view.setBackgroundResource(R.drawable.select);
+                return super.getPointView(view);
+            }
+        };
+        indicator6.reversalMandatory();
+        indicator6.updataView();
+
+        indicator7 = new Indicator(this, 4, ll_7);
+        indicator7.setImgState(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01);
+        indicator7.reversalMandatory();
+        indicator7.updataView();
+
+        indicator8 = new Indicator(this, 4, ll_8);
+        indicator8.setImgState(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01);
+        indicator8.reversalMandatory();
+        indicator8.changeGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+
+        indicators = new ArrayList<>();
+        indicators.add(indicator1);
+        indicators.add(indicator2);
+        indicators.add(indicator3);
+        indicators.add(indicator4);
+        indicators.add(indicator5);
+        indicators.add(indicator6);
+        indicators.add(indicator7);
+        indicators.add(indicator8);
+
+        findViewById(R.id.btn_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 size++;
-                if (size >= indicator.getIndicatorSize()) {
+                if (size >= indicator1.getIndicatorSize()) {
                     size = 0;
                 }
-                indicator.selectIndicator(size);
+
+                for (int i = 0; i < indicators.size(); i++) {
+                    Indicator indicator = indicators.get(i);
+                    indicator.selectIndicator(size);
+                }
             }
         });
 
-        findViewById(R.id.btn3).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                indicator.reversalMandatory();
-                indicator.selectIndicator(size);
+                indicator8.changeBottomPadding(Integer.parseInt(etBottom.getText().toString()));
             }
         });
 
-        findViewById(R.id.btn4).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                indicator.changeBottomPadding(Integer.parseInt(etBottom.getText().toString()));
-            }
-        });
-
-        findViewById(R.id.btn5).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int margin = Integer.parseInt(etMargin.getText().toString());
-                indicator.changeImageMargin(margin);
+                indicator8.changeImageMargin(Integer.parseInt(etMargin.getText().toString()));
             }
         });
     }
